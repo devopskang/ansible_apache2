@@ -6,11 +6,17 @@
   tasks:
   - name: Update repo
     command: apt update -y
+    tags: update
   - name: Install a package {{pkg_name}}
     apt: name={{pkg_name}} state=present
+    tags: install
   - name: Start {{pkg_name}} service
     service: name={{pkg_name}} state=started
+    tags: start
   - name: Deploy index.html file
     copy: src=index.html dest={{dest_path}}
-  - name: Restart {{pkg_name}} server
+    notify: restart {{pkg_name}} server
+    tags: deploy
+  handlers: 
+  - name: restart {{pkg_name}} server
     service: name={{pkg_name}} state=restarted
